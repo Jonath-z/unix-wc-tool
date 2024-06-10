@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -14,13 +15,16 @@ func contains(s []string, str string) bool {
 		}
 		return false
 	}
+
+	return false
 }
 
 func main() {
-	fileName := flag.String("-c", "", "Specify the file")
+	fileName := flag.String("c", "", "Specify the file")
 	flag.Parse()
 
 	if *fileName == "" {
+
 		panic("Must specify a file Name")
 	}
 
@@ -44,6 +48,20 @@ func main() {
 		panic(err.Error())
 	}
 
-	//if contains(pathsInTheCurrentDir, fileName)
+	if contains(pathsInTheCurrentDir, *fileName) {
+		panic("This file is found in the current directory")
+	}
 
+	count := 0
+	file, err := os.Open(*fileName)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fileScanner := bufio.NewScanner(file)
+	for fileScanner.Scan() {
+		count++
+	}
+
+	fmt.Println(count, *fileName)
 }
