@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -52,16 +51,10 @@ func main() {
 		panic("This file is found in the current directory")
 	}
 
-	count := 0
-	file, err := os.Open(*fileName)
+	fileInfo, err := os.Stat(*fileName)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fileScanner := bufio.NewScanner(file)
-	for fileScanner.Scan() {
-		count++
-	}
-
-	fmt.Println(count, *fileName)
+	fmt.Println(fileInfo.Size(), *fileName)
 }
