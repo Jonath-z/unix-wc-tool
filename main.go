@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -18,25 +19,33 @@ func contains(s []string, str string) bool {
 	return false
 }
 
-type Flags struct {
-	byteNumber string
-	lineNumber string
-}
-
-func main() {
-	flags := Flags{
-		byteNumber: "c",
-		lineNumber: "l",
+func getByteNumber(fileName string) {
+	fileInfo, err := os.Stat(fileName)
+	if err != nil {
+		panic(err.Error())
 	}
 
-	fileName := flag.String(flags.byteNumber, "", "Specify the file")
-	//fileName = flag.String(flags.lineNumber, "", "Specify the file")
+	fmt.Println(fileInfo.Size(), fileName)
+}
 
-	flag.Parse()
+func getNumberOfLines(fileName string) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		panic(err.Error())
+	}
 
-	fmt.Println(flag.Args())
+	defer file.Close()
+	count := 0
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		count++
+	}
+
+	fmt.Println(count, fileName)
+}
+
+func ProcessFile(fileName *string, cb func(string)) {
 	if *fileName == "" {
-
 		panic("Must specify a file Name")
 	}
 
@@ -64,10 +73,21 @@ func main() {
 		panic("This file is found in the current directory")
 	}
 
-	fileInfo, err := os.Stat(*fileName)
-	if err != nil {
-		panic(err.Error())
+	cb(*fileName)
+}
+
+func main() {
+	byteNumber := flag.String("c", "", "Flag to get the file byte number")
+	lineNumber := flag.String("l", "", "Flag to get the file line number")
+	flag.Parse()
+
+	if *byteNumber != "" {
+		ProcessFile(byteNumber, getByteNumber)
+		return
 	}
 
-	fmt.Println(fileInfo.Size(), *fileName)
+	if *lineNumber != "" {
+		ProcessFile(lineNumber, getNumberOfLines)
+		return
+	}
 }
