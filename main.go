@@ -18,10 +18,23 @@ func contains(s []string, str string) bool {
 	return false
 }
 
+type Flags struct {
+	byteNumber string
+	lineNumber string
+}
+
 func main() {
-	fileName := flag.String("c", "", "Specify the file")
+	flags := Flags{
+		byteNumber: "c",
+		lineNumber: "l",
+	}
+
+	fileName := flag.String(flags.byteNumber, "", "Specify the file")
+	//fileName = flag.String(flags.lineNumber, "", "Specify the file")
+
 	flag.Parse()
 
+	fmt.Println(flag.Args())
 	if *fileName == "" {
 
 		panic("Must specify a file Name")
