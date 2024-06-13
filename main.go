@@ -44,6 +44,23 @@ func getNumberOfLines(fileName string) {
 	fmt.Println(count, fileName)
 }
 
+func countWords(fileName string) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer file.Close()
+	wordCounter := 0
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanWords)
+	for scanner.Scan() {
+		wordCounter++
+	}
+
+	fmt.Println(wordCounter, fileName)
+}
+
 func ProcessFile(fileName *string, cb func(string)) {
 	if *fileName == "" {
 		panic("Must specify a file Name")
@@ -79,6 +96,7 @@ func ProcessFile(fileName *string, cb func(string)) {
 func main() {
 	byteNumber := flag.String("c", "", "Flag to get the file byte number")
 	lineNumber := flag.String("l", "", "Flag to get the file line number")
+	wordCounter := flag.String("w", "", "Flag to get the file word counter")
 	flag.Parse()
 
 	if *byteNumber != "" {
@@ -90,4 +108,9 @@ func main() {
 		ProcessFile(lineNumber, getNumberOfLines)
 		return
 	}
+
+	if *wordCounter != "" {
+		ProcessFile(wordCounter, countWords)
+	}
+
 }
