@@ -25,7 +25,6 @@ func getByteNumber(fileName string) int64 {
 		panic(err.Error())
 	}
 
-	//fmt.Println(fileInfo.Size(), fileName)
 	return fileInfo.Size()
 }
 
@@ -42,7 +41,6 @@ func getNumberOfLines(fileName string) int {
 		count++
 	}
 
-	//fmt.Println(count, fileName)
 	return count
 }
 
@@ -60,7 +58,6 @@ func countWords(fileName string) int {
 		wordCounter++
 	}
 
-	//fmt.Println(wordCounter, fileName)
 	return wordCounter
 }
 
@@ -77,7 +74,7 @@ func counterCharacter(fileName string) int {
 	for scanner.Scan() {
 		characterCounter++
 	}
-	//fmt.Println(characterCounter, fileName)
+
 	return characterCounter
 }
 
