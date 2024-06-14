@@ -19,16 +19,17 @@ func contains(s []string, str string) bool {
 	return false
 }
 
-func getByteNumber(fileName string) {
+func getByteNumber(fileName string) int64 {
 	fileInfo, err := os.Stat(fileName)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Println(fileInfo.Size(), fileName)
+	//fmt.Println(fileInfo.Size(), fileName)
+	return fileInfo.Size()
 }
 
-func getNumberOfLines(fileName string) {
+func getNumberOfLines(fileName string) int {
 	file, err := os.Open(fileName)
 	if err != nil {
 		panic(err.Error())
@@ -41,10 +42,11 @@ func getNumberOfLines(fileName string) {
 		count++
 	}
 
-	fmt.Println(count, fileName)
+	//fmt.Println(count, fileName)
+	return count
 }
 
-func countWords(fileName string) {
+func countWords(fileName string) int {
 	file, err := os.Open(fileName)
 	if err != nil {
 		panic(err.Error())
@@ -58,11 +60,29 @@ func countWords(fileName string) {
 		wordCounter++
 	}
 
-	fmt.Println(wordCounter, fileName)
+	//fmt.Println(wordCounter, fileName)
+	return wordCounter
 }
 
-func ProcessFile(fileName *string, cb func(string)) {
-	if *fileName == "" {
+func counterCharacter(fileName string) int {
+	file, err := os.Open(fileName)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer file.Close()
+	characterCounter := 0
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanRunes)
+	for scanner.Scan() {
+		characterCounter++
+	}
+	//fmt.Println(characterCounter, fileName)
+	return characterCounter
+}
+
+func ProcessFile(fileName string, cb func(string)) {
+	if fileName == "" {
 		panic("Must specify a file Name")
 	}
 
@@ -86,31 +106,54 @@ func ProcessFile(fileName *string, cb func(string)) {
 		panic(err.Error())
 	}
 
-	if contains(pathsInTheCurrentDir, *fileName) {
+	if contains(pathsInTheCurrentDir, fileName) {
 		panic("This file is found in the current directory")
 	}
 
-	cb(*fileName)
+	cb(fileName)
 }
 
 func main() {
 	byteNumber := flag.String("c", "", "Flag to get the file byte number")
 	lineNumber := flag.String("l", "", "Flag to get the file line number")
 	wordCounter := flag.String("w", "", "Flag to get the file word counter")
+	characterCounter := flag.String("m", "", "Flag to get the file character counter")
+
 	flag.Parse()
 
 	if *byteNumber != "" {
-		ProcessFile(byteNumber, getByteNumber)
+		ProcessFile(*byteNumber, func(s string) {
+			fmt.Println(getByteNumber(s), s)
+		})
 		return
 	}
 
 	if *lineNumber != "" {
-		ProcessFile(lineNumber, getNumberOfLines)
+		ProcessFile(*lineNumber, func(s string) {
+			fmt.Println(getNumberOfLines(s), s)
+		})
 		return
 	}
 
 	if *wordCounter != "" {
-		ProcessFile(wordCounter, countWords)
+		ProcessFile(*wordCounter, func(s string) {
+			fmt.Println(countWords(s), s)
+		})
 	}
+
+	if *characterCounter != "" {
+		ProcessFile(*characterCounter, func(s string) {
+			fmt.Println(counterCharacter(s), s)
+		})
+		return
+	}
+
+	ProcessFile(flag.Arg(0), func(s string) {
+		byteNumber := getByteNumber(s)
+		lineNumber := getNumberOfLines(s)
+		wordNumber := countWords(s)
+
+		fmt.Println(byteNumber, lineNumber, wordNumber, s)
+	})
 
 }
