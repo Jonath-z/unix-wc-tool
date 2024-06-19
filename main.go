@@ -174,6 +174,14 @@ func main() {
 			stdin := handleStandardInput()
 			runes := utf8.RuneCountInString(stdin)
 			fmt.Println(runes)
+		default:
+			ProcessFile(args[0], func(s string) {
+				byteNumber := getByteNumber(&s, nil)
+				lineNumber := getNumberOfLines(&s, nil)
+				wordNumber := countWords(s)
+
+				fmt.Println(byteNumber, lineNumber, wordNumber, s)
+			})
 		}
 		return
 	}
@@ -210,11 +218,4 @@ func main() {
 		return
 	}
 
-	ProcessFile(flag.Arg(0), func(s string) {
-		byteNumber := getByteNumber(&s, nil)
-		lineNumber := getNumberOfLines(&s, nil)
-		wordNumber := countWords(s)
-
-		fmt.Println(byteNumber, lineNumber, wordNumber, s)
-	})
 }
